@@ -1,0 +1,24 @@
+#!/bin/bash
+
+SSH_DIR=$HOME/.ssh
+ID_RSA=$SSH_DIR/id_rsa
+
+remote=""
+
+while getopts r: opt; do
+  case $opt in
+  r)
+    remote=$OPTARG
+    ;;
+  esac
+done
+
+echo "remote:$remote"
+
+if [ ! -e $ID_RSA ]; then
+  ssh-keygen -t rsa -P "" -f $ID_RSA
+  cat $ID_RSA.pub >> $SSH_DIR/authorized_keys
+  chmod 600 $SSH_DIR/authorized_keys
+fi
+
+ssh-copy-id -i $ID_RSA.pub $remote
